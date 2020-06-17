@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { createStage } from "../gameHelpers"; // to restart game
+
 // Styled Components
 import { StyledTetris, StyledTetrisWrapper } from "./styles/StyledTetris";
 
@@ -16,13 +18,56 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
-  const [player] = usePlayer();
-  const [stage, setStage] = useStage(player);
+  const [player, updatePlayerPos, resetPlayer] = usePlayer();
+  const [stage, setStage] = useStage(player, resetPlayer);
 
   console.log("re-render");
 
+  const movePlayer = dir => {
+    updatePlayerPos({ x: dir, y: 0 });
+  };
+
+  const startGame = () => {
+    // Reset everything
+    setStage(createStage());
+    resetPlayer();
+  };
+
+  const drop = () => {
+    updatePlayerPos({ x: 0, y: 1, collided: false });
+  };
+
+  const dropPlayer = () => {
+    drop();
+  };
+
+  const move = ({ keyCode }) => {
+    if (!gameOver) {
+      if (keyCode === 37) {
+        movePlayer(-1);
+      } else if (keyCode === 39) {
+        movePlayer(1);
+      } else if (keyCode === 40) {
+        dropPlayer();
+      }
+    }
+  };
+
   return (
-    <StyledTetrisWrapper>
+    /* 
+      role attribute에 관한 내용
+      일반적으로 웹 접근성을 위해 역할을 부여, HTML5 요소임
+
+      https://webdir.tistory.com/89 
+      https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/button_role
+
+      tab index에 관한 내용
+      해당 요소에 포커스가 가능한지를 결정하는 여부임
+      탭의 순서를 결정할 수도 있긴 한데, 권장되는 것은 아님. 엘리먼트를 순서대로 위치시키는 것이 권장됨      
+
+      https://developer.mozilla.org/ko/docs/Web/HTML/Global_attributes/tabindex
+    */
+    <StyledTetrisWrapper role="button" tabIndex="0" onKeyDown={e => move(e)}>
       <StyledTetris>
         <Stage stage={stage} />
         <aside>
@@ -35,7 +80,14 @@ const Tetris = () => {
               <Display text="Level" />
             </div>
           )}
-          <StartButton />
+          <StartButton callback={e => startGame()} />
+          {/* 
+            ERROR LOG : onClick 내부에 그냥 함수를 넣어서 infinite loop 에러 발생했었음
+            그 이유는 startgame 내부에 리랜더링하는 함수가 있었고, setState(...)
+            onClick 내부에 함수 이름과 같이 'startGame'을 넣은게 아니라 'startGame()' 형태로 넣어서
+            리액트가 함수가 실행된 결과를 onClick에 넣으려 했고, 함수 실행 중 계속 setState가 발생했으므로
+            거기서 무한 리랜더링(infinite loop error)가 발생함 
+          */}
         </aside>
       </StyledTetris>
     </StyledTetrisWrapper>
