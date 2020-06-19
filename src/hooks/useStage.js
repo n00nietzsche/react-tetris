@@ -12,8 +12,11 @@ export const useStage = (player, resetPlayer) => {
       );
 
       // Then draw the tetromino
+      // 테트리스 조각이 땅바닥에 붙었을 때 합치는 부분
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
+          // console.log("value, x", value, x);
+          // console.log("player.pos.x, player.pos.y", player.pos.x, player.pos.y);
           if (value !== 0) {
             newStage[y + player.pos.y][x + player.pos.x] = [
               value,
@@ -23,11 +26,15 @@ export const useStage = (player, resetPlayer) => {
         });
       });
 
+      if (player.collided) {
+        resetPlayer();
+      }
+
       return newStage;
     };
 
     setStage(prev => updateStage(prev));
-  }, [player]);
+  }, [player, resetPlayer]);
 
   return [stage, setStage];
 };

@@ -7,7 +7,7 @@ ERROR LOG: 대소문자
 */
 
 const StartButton = ({ callback }) => (
-  <StyledStartButton onClick={callback}>Start Game</StyledStartButton>
+  <StyledStartButton onClick={callback}>게임 시작</StyledStartButton>
 );
 
 export default StartButton;
