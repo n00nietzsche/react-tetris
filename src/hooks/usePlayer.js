@@ -9,17 +9,20 @@ export const usePlayer = () => {
     collided: false,
   });
 
-  const updatePlayerPos = useCallback(({ x, y, collided }) => {
+  const updatePlayerPos = ({ x, y, collided }) => {
     console.log("updatePlayerPos x, y, collided", x, y, collided);
-
+    /*
+    setState(prev => {}) 을 이용해서 이전에 있던 값을 이용 가능
+     */
     setPlayer(prev => {
+      console.log("prev", prev);
       return {
         ...prev,
         pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
         collided,
       };
     });
-  }, []);
+  };
 
   const resetPlayer = useCallback(() => {
     setPlayer({
