@@ -9,19 +9,30 @@ export const usePlayer = () => {
     collided: false,
   });
 
+  const rotate = (matrix, dir) => {
+    // Make the rows to become cols (transpose)
+    const rotatedTetro = matrix.map((_, index) =>
+      matrix.map(col => col[index])
+    );
+
+    // Reverse each row to get a rotated matrix
+    if (dir > 0) return rotatedTetro.map(row => row.reverse());
+    return rotatedTetro.reverse();
+  };
+
+  const playerRotate = (stage, dir) => {
+    const clonedPlayer = JSON.parse(JSON.stringify(player));
+    clonedPlayer.tetromino = rotate(clonedPlayer.tetromino, dir);
+
+    setPlayer(clonedPlayer);
+  };
+
   const updatePlayerPos = ({ x, y, collided }) => {
-    console.log("updatePlayerPos x, y, collided", x, y, collided);
-    /*
-    setState(prev => {}) 을 이용해서 이전에 있던 값을 이용 가능
-     */
-    setPlayer(prev => {
-      console.log("prev", prev);
-      return {
-        ...prev,
-        pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
-        collided,
-      };
-    });
+    setPlayer(prev => ({
+      ...prev,
+      pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
+      collided,
+    }));
   };
 
   const resetPlayer = useCallback(() => {
@@ -32,5 +43,5 @@ export const usePlayer = () => {
     });
   }, []);
 
-  return [player, updatePlayerPos, resetPlayer];
+  return [player, updatePlayerPos, resetPlayer, playerRotate];
 };

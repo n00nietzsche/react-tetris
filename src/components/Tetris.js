@@ -18,7 +18,7 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null);
   const [gameOver, setGameOver] = useState(false);
 
-  const [player, updatePlayerPos, resetPlayer] = usePlayer();
+  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
   const [stage, setStage] = useStage(player, resetPlayer);
 
   console.log("re-render");
@@ -57,16 +57,20 @@ const Tetris = () => {
   };
 
   const move = ({ keyCode }) => {
+    console.log("move worked");
     if (!gameOver) {
-      // ArrowLeft
+      // Arrow Left
       if (keyCode === 37) {
         movePlayer(-1);
-        // ArrowRight
+        // Arrow Right
       } else if (keyCode === 39) {
         movePlayer(1);
-        // ArrowDown
+        // Arrow Down
       } else if (keyCode === 40) {
-        dropPlayer(0);
+        dropPlayer();
+        // Arrow Up
+      } else if (keyCode === 38) {
+        playerRotate(stage, 1);
       }
     }
   };
@@ -98,7 +102,7 @@ const Tetris = () => {
               <Display text="단계" />
             </div>
           )}
-          <StartButton callback={e => startGame()} />
+          <StartButton callback={startGame} />
           {/* 
             ERROR LOG : onClick 내부에 그냥 함수를 넣어서 infinite loop 에러 발생했었음
             그 이유는 startgame 내부에 리랜더링하는 함수가 있었고, setState(...)
