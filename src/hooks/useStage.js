@@ -5,6 +5,7 @@ export const useStage = (player, resetPlayer) => {
   const [stage, setStage] = useState(createStage());
 
   useEffect(() => {
+    console.log("updateStage worked");
     const updateStage = prevStage => {
       // row단위로 스테이지의 모든 cell을 뒤지면서 "clear"인지 확인
       const newStage = prevStage.map(row =>
