@@ -6,6 +6,7 @@ import { createStage, checkCollision } from "../gameHelpers"; // to restart game
 import { StyledTetris, StyledTetrisWrapper } from "./styles/StyledTetris";
 
 // Custom Hooks
+import { useInterval } from "../hooks/useInterval";
 import { usePlayer } from "../hooks/usePlayer";
 import { useStage } from "../hooks/useStage";
 
@@ -34,6 +35,7 @@ const Tetris = () => {
   const startGame = () => {
     // Reset everything
     setStage(createStage());
+    setDropTime(1000);
     resetPlayer();
     setGameOver(false);
   };
@@ -52,7 +54,19 @@ const Tetris = () => {
     }
   };
 
+  const keyUp = ({ keyCode }) => {
+    if (!gameOver) {
+      // Down Arrow
+      if (keyCode === 40) {
+        console.log("interval on");
+        setDropTime(1000);
+      }
+    }
+  };
+
   const dropPlayer = () => {
+    console.log("interval off");
+    setDropTime(null);
     drop();
   };
 
@@ -75,6 +89,10 @@ const Tetris = () => {
     }
   };
 
+  useInterval(() => {
+    drop();
+  }, dropTime);
+
   return (
     /* 
       role attribute에 관한 내용
@@ -89,7 +107,12 @@ const Tetris = () => {
 
       https://developer.mozilla.org/ko/docs/Web/HTML/Global_attributes/tabindex
     */
-    <StyledTetrisWrapper role="button" tabIndex="0" onKeyDown={e => move(e)}>
+    <StyledTetrisWrapper
+      role="button"
+      tabIndex="0"
+      onKeyDown={e => move(e)}
+      onKeyUp={keyUp}
+    >
       <StyledTetris>
         <Stage stage={stage} />
         <aside>
