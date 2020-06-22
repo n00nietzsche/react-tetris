@@ -27,6 +27,11 @@ export const usePlayer = () => {
     const pos = clonedPlayer.pos.x;
     let offset = 1;
 
+    /*
+    It prevents bugs from rotating
+    rotating on the edge of the stage can make a bug cause there is no space to rotate
+    so methods below are needed
+    */
     while (checkCollision(clonedPlayer, stage, { x: 0, y: 0 })) {
       clonedPlayer.pos.x += offset;
       offset = -(offset + (offset > 0 ? 1 : -1));
